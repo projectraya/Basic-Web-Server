@@ -23,6 +23,12 @@ namespace BasicWebServer.Server.HTTP
         }
 
         public string Name { get; init; } //init means once its created, it cannot be changed
-        public string Value { get; set; }   
+        public string Value { get; set; }
+
+        public override string ToString()
+        {
+            //Content-Type: text/plain
+            return $"{this.Name}: {this.Value}";
+        }
     }
 }

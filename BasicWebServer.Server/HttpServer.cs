@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using BasicWebServer.Server.HTTP;
+using BasicWebServer.Server.Routing;
+using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -11,14 +13,27 @@ namespace BasicWebServer.Server
         private readonly int _port;
         private readonly TcpListener _serverListener;
 
-        public HttpServer(string ipAdress, int port)
+        private readonly RoutingTable _routingTable;
+
+        public HttpServer(string ipAdress, int port, Action<IRoutingTable> routingTableConfiguration)
         {
             this._ipAdress = IPAddress.Parse(ipAdress);
             this._port = port;
 
             this._serverListener = new TcpListener(_ipAdress, _port);
+
+            routingTableConfiguration(this._routingTable = new RoutingTable()); //what is action?
         }
 
+        public HttpServer(int port, Action<IRoutingTable> routingTable) : this("127.0.0.1", port, routingTable)
+        {
+            
+        }
+
+        public HttpServer(Action<IRoutingTable> routingTable) : this(8080, routingTable) //giving to the upper one
+        {
+            
+        }
         public void Start()
         {
             _serverListener.Start();
@@ -36,7 +51,10 @@ namespace BasicWebServer.Server
 
                 Console.WriteLine(requestText);
 
-                WriteResponse(networkStream, "Hello from the server!");
+                Request request = Request.Parse(requestText);
+                Response response = this._routingTable.MatchRequest(request);
+
+                WriteResponse(networkStream, response);
 
                 connection.Close();
             }
