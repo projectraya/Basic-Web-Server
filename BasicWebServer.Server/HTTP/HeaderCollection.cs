@@ -16,12 +16,15 @@ namespace BasicWebServer.Server.HTTP
             this._headers = new Dictionary<string, Header>();
         }
 
+        public string this[string name] => this._headers[name].Value;
+
         public int Count  => this._headers.Count;
+
+        public bool Contains(string name) => this._headers.ContainsKey(name);
 
         public void Add(string name, string value)
         {
-            Header header = new Header(name, value);
-            this._headers.Add(name, header);
+            this._headers[name] = new Header(name, value);
         }
 
         public IEnumerator<Header> GetEnumerator()
