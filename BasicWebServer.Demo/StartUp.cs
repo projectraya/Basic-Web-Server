@@ -16,12 +16,16 @@ namespace BasicWebServer.Demo
 
 
         public static void Main()
-        => new HttpServer(routes => routes
+        {
+            HttpServer server = new HttpServer(routes => routes
             .MapGet("/", new TextResponse("Hello from the server!"))
             .MapGet("/Redirect", new RedirectResponse("https://softuni.org/"))
-            .MapGet("/HTML", new HTMLResponse(StartUp.HtmlForm))
-            .MapPost("/HTML", new TextResponse("", StartUp.AddFormDataAction)))
-            .Start();
+            .MapGet("/HTML", new HTMLResponse(HtmlForm))
+            .MapPost("/HTML", new TextResponse("", StartUp.AddFormDataAction)));
+
+            server.Start();
+        }
+        
 
         private static void AddFormDataAction
         (Request request, Response response)

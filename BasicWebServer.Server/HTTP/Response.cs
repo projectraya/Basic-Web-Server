@@ -27,9 +27,9 @@ namespace BasicWebServer.Server.HTTP
             StringBuilder result = new StringBuilder();
             result.AppendLine($"HTTP/1.1 {(int)this.StatusCode} {this.StatusCode}");
 
-            foreach(var item in this.Headers) //this is possible thanks to ienumerator
+            foreach(var header in this.Headers) //this is possible thanks to ienumerator
             {
-                result.AppendLine(item.ToString());
+                result.AppendLine(header.ToString());
             }
 
             result.AppendLine();
