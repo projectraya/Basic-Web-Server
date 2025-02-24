@@ -41,13 +41,13 @@ namespace BasicWebServer.Server
             Console.WriteLine($"Server started on port: {_port}");
             Console.WriteLine($"Listening for requests...");
 
-            _ = Task.Run(async () =>
+
+            while (true)
             {
-                while (true)
+                var connection = await _serverListener.AcceptTcpClientAsync();
+
+                _ = Task.Run(async () =>
                 {
-
-                    var connection = await _serverListener.AcceptTcpClientAsync();
-
                     var networkStream = connection.GetStream();
 
                     var requestText = await this.ReadRequestAsync(networkStream);
@@ -66,8 +66,10 @@ namespace BasicWebServer.Server
                     await WriteResponseAsync(networkStream, response);
 
                     connection.Close();
-                }
-            });
+                });
+                
+            }
+            
             
 
             
