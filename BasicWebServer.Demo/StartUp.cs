@@ -15,7 +15,7 @@ namespace BasicWebServer.Demo
 </form>";
 
 
-        public static void Main()
+        public async static Task MainAsync()
         {
             HttpServer server = new HttpServer(routes => routes
             .MapGet("/", new TextResponse("Hello from the server!"))
@@ -23,7 +23,7 @@ namespace BasicWebServer.Demo
             .MapGet("/HTML", new HTMLResponse(HtmlForm))
             .MapPost("/HTML", new TextResponse("", StartUp.AddFormDataAction)));
 
-            server.Start();
+            await server.StartAsync();
         }
         
 
