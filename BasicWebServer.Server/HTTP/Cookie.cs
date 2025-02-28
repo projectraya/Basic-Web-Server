@@ -9,8 +9,6 @@ namespace BasicWebServer.Server.HTTP
 {
     public class Cookie
     {
-        public string Name { get; set; }
-        public string Value { get; set; }
 
         public Cookie(string name, string value)
         {
@@ -20,10 +18,10 @@ namespace BasicWebServer.Server.HTTP
             this.Name = name;
             this.Value = value;
         }
-
+        public string Name { get; init; }
+        public string Value { get; init; }
         public override string ToString()
-        {
-            return $"{this.Name}={this.Value}";
-        }
+            => $"{this.Name}={this.Value}";
+        
     }
 }

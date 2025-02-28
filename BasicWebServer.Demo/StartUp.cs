@@ -21,6 +21,14 @@ namespace BasicWebServer.Demo
 </form>";
 
         private const string FileName = "context.txt";
+        private const string LoginForm = @"<form action='/Login' method='POST'>
+   Username: <input type='text' name='Username'/>
+   Password: <input type='text' name='Password'/>
+   <input type='submit' value ='Log In' /> 
+</form>";
+
+        private const string Username = "user";
+        private const string Password = "user123";
 
         public async static Task Main()
         {
@@ -34,11 +42,56 @@ namespace BasicWebServer.Demo
             .MapPost("/HTML", new TextResponse("", StartUp.AddFormDataAction))
             .MapGet("/Content", new HTMLResponse(StartUp.DownloadForm))
             .MapPost("/Content", new TextFileResponse(StartUp.FileName))
-            .MapGet("/Cookies", new HTMLResponse("", StartUp.AddCookiesAction)));
+            .MapGet("/Cookies", new HTMLResponse("", StartUp.AddCookiesAction))
+            .MapGet("/Session", new TextResponse("", StartUp.DisplaySessionInfoAction))
+            .MapGet("/Login", new HTMLResponse(StartUp.LoginForm))
+            .MapPost("/Login", new HTMLResponse("", StartUp.LoginAction))
+            .MapGet("/Logout", new HTMLResponse("", StartUp.LogoutAction))
+            .MapGet("/UserProfile", new HTMLResponse("", StartUp.GetUserDataAction)));
 
             await server.StartAsync();
         }
-        
+        private static void GetUserDataAction(Request request, Response response)
+        {
+            if (request.Session.ContainsKey(Session.SessionUserKey))
+            {
+                response.Body = "";
+                response.Body += $"<h3>Currently logged-in user " + $"is with username '{Username}'</h3>";
+            }
+            else
+            {
+                response.Body = "";
+                response.Body += "<h3>You should first log in " + "- <a href='/Login'>Login</a></h3>";
+            }
+        }
+        private static void LogoutAction(Request request, Response response)
+        {
+            request.Session.Clear();
+            response.Body = "";
+            response.Body += "<h3>Logged out successfully!</h3>";
+        }
+        private static void LoginAction(Request request, Response response)
+        {
+            request.Session.Clear();
+            var bodyText = "";
+            var usernameMatches = request.Form["Username"] == StartUp.Username;
+            var passwordMatches = request.Form["Password"] == StartUp.Password;
+
+            if(usernameMatches && passwordMatches)
+            {
+                request.Session[Session.SessionUserKey] = "MyUserId";
+                response.Cookies.Add(Session.SessionCookieName, request.Session.Id);
+
+                bodyText = "<h3>Logged successfully!</h3>";
+            }
+            else
+            {
+                bodyText = StartUp.LoginForm;
+            }
+
+            response.Body = "";
+            response.Body += bodyText;
+        }
         private static async Task<string> DownloadWebsiteContentAsync(string url)
         {
             var httpClient = new HttpClient();
@@ -79,9 +132,9 @@ namespace BasicWebServer.Demo
 
         private static void AddCookiesAction(Request request, Response response)
         {
-            var requestHasCookies = request.Cookies.Any();
+            bool requestHasCookies = request.Cookies.Any(c => c.Name != Session.SessionCookieName);
 
-            string bodyText = string.Empty;
+            var bodyText = string.Empty;
 
             if (requestHasCookies)
             {
@@ -113,6 +166,26 @@ namespace BasicWebServer.Demo
             }
 
             response.Body = bodyText;
+        }
+
+        private static void DisplaySessionInfoAction(Request request, Response response)
+        {
+            bool sessionExists = request.Session.ContainsKey(Session.SessionCurrentDateKey);
+            string bodyText = "";
+
+
+            if (sessionExists)
+            {
+                var currentDate = request.Session[Session.SessionCurrentDateKey];
+                bodyText = $"Stored date: {currentDate}!";
+            }
+            else
+            {
+                bodyText = "Current date stored!";
+            }
+
+            response.Body = "";
+            response.Body += bodyText;
         }
     }
 
