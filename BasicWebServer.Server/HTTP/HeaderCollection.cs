@@ -23,20 +23,8 @@ namespace BasicWebServer.Server.HTTP
         public bool Contains(string name) => this._headers.ContainsKey(name);
 
         public void Add(string name, string value)
-            
-        {
-            Header header = new Header(name, value);
 
-            if (this._headers.ContainsKey(name))
-            {
-                this._headers[name] = header;
-            }
-            else
-            {
-                this._headers.Add(name, header);
-            }
-            
-        }
+        => this._headers[name] = new Header(name, value);
 
         public IEnumerator<Header> GetEnumerator()
         {
