@@ -26,10 +26,10 @@ namespace BasicWebServer.Demo
             .MapPost<HomeController>("/Content", c => c.DownloadContent())
             .MapGet<HomeController>("/Cookies", c => c.Cookies())
             .MapGet<HomeController>("/Session", c => c.Session())
-            .MapGet<UserController>("/Login", c => c.Login())
-            .MapPost<UserController>("/Login", c => c.LoginUser())
-            .MapGet<UserController>("/Logout", c => c.Logout())
-            .MapGet<UserController>("/UserProfile", c => c.GetUserData()));
+            .MapGet<UsersController>("/Login", c => c.Login())
+            .MapPost<UsersController>("/Login", c => c.LoginUser())
+            .MapGet<UsersController>("/Logout", c => c.Logout())
+            .MapGet<UsersController>("/UserProfile", c => c.GetUserData()));
 
 
             await server.StartAsync();

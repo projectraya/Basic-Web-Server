@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace BasicWebServer.Demo.Controllers
 {
-    public class UserController : Controller
+    public class UsersController : Controller
     {
 
         private const string Username = "user";
         private const string Password = "user123";
 
 
-        public UserController(Request request) : base(request)
+        public UsersController(Request request) : base(request)
         {
 
         }
@@ -27,8 +27,8 @@ namespace BasicWebServer.Demo.Controllers
         {
             this.Request.Session.Clear();
             
-            var usernameMatches = this.Request.Form["Username"] == UserController.Username;
-            var passwordMatches = this.Request.Form["Password"] == UserController.Password;
+            var usernameMatches = this.Request.Form["Username"] == UsersController.Username;
+            var passwordMatches = this.Request.Form["Password"] == UsersController.Password;
 
 
             if (usernameMatches && passwordMatches)
@@ -58,7 +58,7 @@ namespace BasicWebServer.Demo.Controllers
         {
             if (this.Request.Session.ContainsKey(Session.SessionUserKey))
             {
-                return Html($"<h3>Currently logged-in user is with username '{UserController.Username}'</h3>");
+                return Html($"<h3>Currently logged-in user is with username '{UsersController.Username}'</h3>");
             }
             return Redirect("/Login");
         }
