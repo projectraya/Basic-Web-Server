@@ -11,59 +11,34 @@ namespace BasicWebServer.Server.Routing
 {
     public class RoutingTable : IRoutingTable
     {
-        private readonly Dictionary<Method, Dictionary<string, Response>> _routes;
+        private readonly Dictionary<Method, Dictionary<string, Func<Request, Response>>> _routes;
 
         public RoutingTable()
         {
-            this._routes = new Dictionary<Method, Dictionary<string, Response>>()
+            this._routes = new ()
             {
-                [Method.GET] = new Dictionary<string, Response>(),
-                [Method.POST] = new Dictionary<string, Response>(),
-                [Method.PUT] = new Dictionary<string, Response>(),
-                [Method.DELETE] = new Dictionary<string, Response>()
+                [Method.GET] = new(),
+                [Method.POST] = new(),
+                [Method.PUT] = new(),
+                [Method.DELETE] = new()
             };
         }
-        public IRoutingTable Map(string URL, Method method, Response response)
+        public IRoutingTable Map(string path, Method method, Func<Request, Response> responseFunction)
         {
-            switch (method)
-            {
-                case Method.GET:
+            Guard.AgainstNull(path, nameof(path));
+            Guard.AgainstNull(responseFunction, nameof(responseFunction));
 
-                    this.MapGet(URL, response);
-                    break;
+            this._routes[method][path] = responseFunction;
 
-                case Method.POST:
-
-                    this.MapPost(URL, response);
-                    break;
-
-                default:
-                    throw new InvalidOperationException($"Method '{method}' is not supported.");
-
-            }
             return this;
+            
         }
 
-        public IRoutingTable MapGet(string URL, Response response)
-        {
-            Guard.AgainstNull(URL, nameof(URL));
-            Guard.AgainstNull(response, nameof(response));
+        public IRoutingTable MapGet(string path, Func<Request, Response> responseFunction)
+        => Map(path, Method.GET, responseFunction);
 
-            this._routes[Method.GET][URL] = response; //the value of the inside dictionary
-
-            return this; //to be able to link with .MapGet().MapGet()
-            //Linq works the same way
-        }
-
-        public IRoutingTable MapPost(string URL, Response response)
-        {
-            Guard.AgainstNull(URL, nameof(URL));
-            Guard.AgainstNull(response, nameof(response));
-
-            this._routes[Method.POST][URL] = response; //the value of the inside dictionary
-
-            return this; //to be able to link with .MapGet().MapGet()
-        }
+        public IRoutingTable MapPost(string path, Func<Request, Response> responseFunction)
+        => Map(path, Method.POST, responseFunction);
 
         public Response MatchRequest(Request request)
         {
@@ -76,7 +51,8 @@ namespace BasicWebServer.Server.Routing
                 return new NotFoundResponse();
             }
 
-            return this._routes[requestMethod][requestURL];
+            var responseFunction = this._routes[requestMethod][requestURL];
+            return responseFunction(request);
         }
     }
 }
