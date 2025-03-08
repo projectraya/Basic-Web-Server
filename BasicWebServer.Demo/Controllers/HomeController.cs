@@ -68,11 +68,15 @@ namespace BasicWebServer.Demo.Controllers
 
                 foreach (var cookie in this.Request.Cookies)
                 {
-                    cookieText.Append("<tr>");
+                    // Ignore ASP.NET Core system cookies
+                    if (cookie.Name.StartsWith(".AspNetCore.") || cookie.Name.StartsWith("ASP.NET_SessionId"))
+                    {
+                        continue;
+                    }
 
+                    cookieText.Append("<tr>");
                     cookieText.Append($"<td>{HttpUtility.HtmlEncode(cookie.Name)}</td>");
                     cookieText.Append($"<td>{HttpUtility.HtmlEncode(cookie.Value)}</td>");
-
                     cookieText.Append("</tr>");
                 }
 
@@ -99,7 +103,7 @@ namespace BasicWebServer.Demo.Controllers
             if (sessionExists)
             {
                 var currentDate = this.Request.Session[currentDateKey];
-                return Text($"Store date: {currentDate}!");
+                return Text($"Stored date: {currentDate}!");
             }
 
             return Text("Current date stored!");
