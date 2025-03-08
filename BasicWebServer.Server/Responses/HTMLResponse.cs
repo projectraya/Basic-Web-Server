@@ -9,9 +9,7 @@ namespace BasicWebServer.Server.Responses
 {
     public class HTMLResponse : ContentResponse
     {
-        public HTMLResponse(string text, 
-            Action<Request, Response> preRenderAction = null)
-            : base(text, ContentType.Html, preRenderAction)
+        public HTMLResponse(string text): base(text, ContentType.Html)
         {
 
         }
